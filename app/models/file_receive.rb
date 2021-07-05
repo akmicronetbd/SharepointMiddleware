@@ -1,0 +1,2 @@
+class FileReceive < ApplicationRecord
+end
