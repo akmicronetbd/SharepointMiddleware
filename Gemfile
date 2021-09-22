@@ -58,3 +58,4 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'omniauth-oauth2', '~> 1.7.1'
 gem 'omniauth-rails_csrf_protection'
 gem 'jwt'
+gem 'passenger'
