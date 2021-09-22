@@ -1,0 +1,12 @@
+default: &default
+  integration_key: DOCUSIGN_INTEGRATION_KEY
+  call_back_url: DOCUSIGN_CALLBACK_URL
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default
