@@ -4,7 +4,8 @@ require 'openssl'
 class FileReceive < ApplicationRecord
 	def act
 		begin
-			@user_info = UserInformation.where(account_id: self.account_id).first
+			input_data = JSON.parse(self.data)
+			@user_info = UserInformation.where(account_id: input_data["account_id"]).first
 			if @user_info.nil?
 				# Get access code with administrative consent
 				get_admin_consent
@@ -23,12 +24,9 @@ class FileReceive < ApplicationRecord
 				case res
 				when Net::HTTPSuccess, Net::HTTPRedirection
 					response = JSON.parse(res.body)
-					input_data = JSON.parse(self.data)
-					@user_info = UserInformation.create(access_token: response["access_token"], token_type: response["token_type"], expires_at: Time.now+(response["expires_in"].to_i).seconds, account_id: input_data["account_id"])	
-					puts ">>>>>>>>>>>>>>>>>>>>"
-					puts @user_info.inspect
+					@user_info = UserInformation.create(access_token: response["access_token"], token_type: response["token_type"], expires_at: Time.now+(response["expires_in"].to_i).seconds, account_id: input_data["account_id"])
 				else
-					puts res.body.inspect
+					Rails.logger.info res.body.inspect
 					res.value
 				end
 				#Get account id and base url
