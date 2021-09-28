@@ -23,8 +23,12 @@ class FileReceive < ApplicationRecord
 				case res
 				when Net::HTTPSuccess, Net::HTTPRedirection
 					response = JSON.parse(res.body)
-					@user_info = UserInformation.create(access_token: response["access_token"], token_type: response["token_type"], expires_at: Time.now+(response["expires_in"].to_i).seconds)	
+					input_data = JSON.parse(self.data)
+					@user_info = UserInformation.create(access_token: response["access_token"], token_type: response["token_type"], expires_at: Time.now+(response["expires_in"].to_i).seconds, account_id: input_data["account_id"])	
+					puts ">>>>>>>>>>>>>>>>>>>>"
+					puts @user_info.inspect
 				else
+					puts res.body.inspect
 					res.value
 				end
 				#Get account id and base url
@@ -65,7 +69,8 @@ class FileReceive < ApplicationRecord
 	def create_jwt_token(data)
 		data = JSON.parse(data)
 		rsa_private = OpenSSL::PKey::RSA.new(DOCUSIGN_PRIVATE_KEY)
-		payload = {"iss": DOCUSIGN_CLIENT_ID, "sub": data["account_id"], "iat": Time.now.to_i, "exp": (Time.now+30.days).to_i, "aud": DOCUSIGN_AUD_URL, "scope":"signature impersonation"}
+		payload = {"iss": DOCUSIGN_CLIENT_ID, "sub": data["account_id"], "iat": Time.now.to_i, "exp": (Time.now+30.days).to_i, "aud": DOCUSIGN_AUD_URL, "scope":"signature impersonation spring_read spring_write"}
+		puts payload
 		token = JWT.encode payload, rsa_private, "RS256"
 		return token
 	end
@@ -75,7 +80,8 @@ class FileReceive < ApplicationRecord
 			Rails.logger.info "DOWNLOAD FILE FROM DOCUSIGN"
 			download_success = false
 			file_data = JSON.parse(file_data)
-			uat_url = DOCUSIGN_UAT_URL+"#{user_info.account_id}/documents/#{file_data["document_id"]}"
+			uat_url = DOCUSIGN_UAT_URL+"#{DOCUSIGN_API_USER_ID}/documents/#{file_data["document_id"]}"
+			puts uat_url.inspect
 			url = URI(uat_url)
 			http = Net::HTTP.new(url.host, url.port)
 			http.use_ssl = true
@@ -86,10 +92,8 @@ class FileReceive < ApplicationRecord
 			puts uat_response.body.inspect
 			case uat_response
 			when Net::HTTPSuccess, Net::HTTPRedirection
-				file = File.open(file_data["document_id"], 'w'){|f|
-					uat_response.read_body{ |seg|
-						f << seg
-					}
+				file = File.open(file_data["document_name"], 'w'){|f|
+					uat_response.read_body
 				}
 				download_success = true
 				puts uat_response.inspect
@@ -112,7 +116,7 @@ class FileReceive < ApplicationRecord
 			sharepoint_access = get_sharepoint_access_token
 			sharepoint_access = JSON.parse(sharepoint_access)
 			if !sharepoint_access["access_token"].nil?
-				url = URI.encode(SHAREPOINT_UPLOAD_URL+"(url='Test.doc',overwrite=true)")
+				url = URI.encode(SHAREPOINT_UPLOAD_URL+"(url='#{upload_data['document_name']}',overwrite=true)")
 				url = URI(url)
 				http = Net::HTTP.new(url.host, url.port)
 				http.use_ssl = true
@@ -121,11 +125,11 @@ class FileReceive < ApplicationRecord
 				up_request["Authorization"] = "Bearer #{sharepoint_access["access_token"]}"
 				form_data = [['file', file]]
 				up_request.set_form form_data, 'multipart/form-data'
-				http.request(up_request)
+				up_response = http.request(up_request)
 				case up_response
 				when Net::HTTPSuccess, Net::HTTPRedirection
-					up_response = JSON.parse(up_response.body)
 					puts up_response.inspect
+					Rails.logger.info "Document upload successful"
 				else
 					up_response.value
 				end
