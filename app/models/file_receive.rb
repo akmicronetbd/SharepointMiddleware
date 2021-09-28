@@ -128,6 +128,7 @@ class FileReceive < ApplicationRecord
 				when Net::HTTPSuccess, Net::HTTPRedirection
 					puts up_response.inspect
 					Rails.logger.info "Document upload successful"
+					self.update(completed: true)
 				else
 					up_response.value
 				end
