@@ -119,53 +119,19 @@ Rails.application.configure do
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
 end
 DOCUSIGN_CALLBACK_URL = "http://3.88.138.251/oauth/auth"
-DOCUSIGN_URL = "https://account-d.docusign.com/oauth/token"
-DOCUSING_USER_INFO_URL = "https://account-d.docusign.com/oauth/userinfo"
-DOCUSIGN_CLIENT_ID = "e459d13a-b795-419c-92fb-2ea571025cde"
-DOCUSIGN_INTEGRATION_KEY = "191e6bde-d3a1-44d4-b523-cf2fcae40862"
-DOCUSIGN_AUD_URL = "account-d.docusign.com"
+DOCUSIGN_URL = "https://account.docusign.com/oauth/token"
+DOCUSING_USER_INFO_URL = "https://account.docusign.com/oauth/userinfo"
+DOCUSIGN_CLIENT_ID = "9b6eb9c1-518a-4c73-9e9b-1f82bfa852c0"
+DOCUSIGN_INTEGRATION_KEY = "80967823-cf4c-4c9d-8988-cb1944d02582"
+DOCUSIGN_AUD_URL = "account.docusign.com"
 DOCUSIGN_UAT_URL = "https://apidownloaduatna11.springcm.com/v2/"
-DOCUSIGN_API_USER_ID = "85f56946-2679-4b6d-8bbf-0578668c661f"
-DOCUSIGN_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjSEZ0lyJ248Ga2Xg6JmG
-PS0gegUa09pPVEeCqQ/7O0ZMTRIaqAxZGWK921kGYgUZU2lnaRCAZ7Bj5P+PII6i
-nazZTT3UzIEwS5VC+jHpIFeZuqlycUXuUrOMceaIeDi8dNDk8mWyRiNleaE19vcp
-n5ZQF6rgqOFm6l8zfTjDCCbqaVzCMDmjkG2Z6Ys4IlTcNND6QZg5KlnWsVvLRajz
-Q9uVD1T4vhz6/BcXHQlnlghlbrpvgaiLJawNzOn/7EWecnO1IK8JckBC2szmy7mE
-IqKRum1l8ea0Zte+idL0rqXgt72CZhUhJb4CwsPuHv2/OP6/3QqjImsg3W4sJINZ
-7QIDAQAB
------END PUBLIC KEY-----"
-DOCUSIGN_PRIVATE_KEY = "-----BEGIN RSA PRIVATE KEY-----
-MIIEowIBAAKCAQEAjSEZ0lyJ248Ga2Xg6JmGPS0gegUa09pPVEeCqQ/7O0ZMTRIa
-qAxZGWK921kGYgUZU2lnaRCAZ7Bj5P+PII6inazZTT3UzIEwS5VC+jHpIFeZuqly
-cUXuUrOMceaIeDi8dNDk8mWyRiNleaE19vcpn5ZQF6rgqOFm6l8zfTjDCCbqaVzC
-MDmjkG2Z6Ys4IlTcNND6QZg5KlnWsVvLRajzQ9uVD1T4vhz6/BcXHQlnlghlbrpv
-gaiLJawNzOn/7EWecnO1IK8JckBC2szmy7mEIqKRum1l8ea0Zte+idL0rqXgt72C
-ZhUhJb4CwsPuHv2/OP6/3QqjImsg3W4sJINZ7QIDAQABAoIBABBjCouEK+Gu5BuY
-/cTO/BOjEhqjoxom8X/ODzGFkIdbwe+lAtaxGwYOkrr4cFGgrpsifwZntcZ/ExT7
-nj6KhqlGRl5op9/YaaeCZ6ouHMKg8/xaQSvpPHilLnvp574F4HlelBGX61unhS3a
-oS3RmdH/ncHRw+T4HyoRmc9CxaqZeyxkSOyKtJX24dAr0gouIMVJKy8xdolQ43pO
-Xqr2hDEaC5vuxCS4A7knL2E/QFKzbilGIuGRfcG89Tiq21Y0fXCc0XEi+EFnuJ1P
-xFulKbnFSTYkIk5/V2Egf/PjKBD0XwYtkAEpJziVanCX9TnBV3ECER+B+cT3XJv9
-Q/0UHoUCgYEA0O7nFT6gUtoWjTlSjJdQtlrItSSdppPkjZL3iXtDDmPe5ERXbxvM
-lFqNd4sV3P/dyEXbmHVjiHip9WH5mBDsExigccSo9N7Xap0czODgwMT4nHRnE8Au
-M32hbFdu1Z0qHeGevVk6mGaBkTfuOdatOmvb5uGmoBZVEbfd7lcIjxcCgYEArOv5
-C8BIJTx5njVJF1pAv7mPJSFlzuFuOlUWJHpNhW+VRn98hS1TiYAUJAkWiBwlZ3SZ
-ODEd6H69B+mS8D+P67rn3G3w1uYC4HtlVrRreN0TJOr32fYCAMQqdEYXD8e3LCvx
-MNAgJdmfigWRVviIGVa+/tTpq9EkWT85jzbrYZsCgYBeZoL8Y1Z2+NjVqD+3DCtI
-qU4kIk4k1I+gs/WqJYpPtyofQw2qQwo1QZDHoY0YVHc1pPKqOOfm4nYQS9tFLOgt
-XKQpoyyfrwvvvNslarnB/31A24szLlLxquLDm+GVHLTJ2YYqkWVbNH14SqgVc/zC
-97bc47mwfUakgcoBhUt1swKBgQCSpl1D1gJZcfxCbDZck7It5xS7DKPm29A7sEVj
-EkYEUCls7FmSKGqcRf7OwNZXAGfIYV5ABYez0ShHOZPgJEfOR2izzJlf5xmxf3Tm
-H4S1r+e4e31PYA86zyKiEX8lZt61m16lYxygfPuMdkRYWdYyhxrby32QtYH6HmCW
-UKE22QKBgH/xBTNQAXZ66Vw1hu15UEt+iy5Kd3y80EdbHKaGZVSi7mdhRQLJ0j5t
-mEDm5TF8R+pu9ary5o2kHxFWF/tmVOf03FAKLccKGzl+K9doSkwnku8+rxdI5+gN
-wUZQ851uXEht0zO4DEVf3e3CRQW/DYp9mwsULMt5ONGzXKLq0jZD
------END RSA PRIVATE KEY-----"
+DOCUSIGN_API_USER_ID = "80967823-cf4c-4c9d-8988-cb1944d02582"
+DOCUSIGN_PUBLIC_KEY = ""
+DOCUSIGN_PRIVATE_KEY = ""
 
 SHAREPOINT_ACCESS_URL = "https://accounts.accesscontrol.windows.net/"
-SHAREPOINT_ACCESS_ID = "95d0540a-43ad-405d-8a01-c35d08c3d4b4"
-SHAREPOINT_CLIENT_ID = "c02870dc-1df5-4b55-95c5-0473087668ed@95d0540a-43ad-405d-8a01-c35d08c3d4b4"
-SHAREPOINT_CLIENT_SECRET = "YAs+8n2wAoUNKdCpcluMjjEPc9geruFQHGampNSI+PY="
-SHAREPOINT_RESOURCE = "00000003-0000-0ff1-ce00-000000000000/micronetbdorg.sharepoint.com@95d0540a-43ad-405d-8a01-c35d08c3d4b4"
-SHAREPOINT_UPLOAD_URL = "https://micronetbdorg.sharepoint.com/sites/CLMIntegration/_api/web/GetFolderByServerRelativeUrl('Shared Documents/Workflow')/Files/Add"
+SHAREPOINT_ACCESS_ID = "d77c7f4d-d767-461f-b625-0628792e9e2a"
+SHAREPOINT_CLIENT_ID = "ac575412-3f48-41e9-bced-f287d6109ca3@d77c7f4d-d767-461f-b625-0628792e9e2a"
+SHAREPOINT_CLIENT_SECRET = "3PBY2ro2ryEwgR3/QABTtDZWAp3RcOmb/4aveV+x2Jo="
+SHAREPOINT_RESOURCE = "00000003-0000-0ff1-ce00-000000000000@90140122-8516-11e1-8eff-49304924019b"
+SHAREPOINT_UPLOAD_URL = "https://kymsoffice.sharepoint.com/sites/TestProjectOnline/DPGO%20RFP%20Project/_api/web/lists/getbytitle('Customer')/items"
