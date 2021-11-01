@@ -8,7 +8,7 @@ class FileReceive < ApplicationRecord
 			@user_info = UserInformation.where(account_id: input_data["account_id"]).first
 			if @user_info.nil?
 				# Get access code with administrative consent
-				get_admin_consent
+				# get_admin_consent
 				# Get access_token using JWT
 				# url = URI(DOCUSIGN_URL)
 				# http = Net::HTTP.new(url.host, url.port)
