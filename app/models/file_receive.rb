@@ -10,42 +10,62 @@ class FileReceive < ApplicationRecord
 				# Get access code with administrative consent
 				get_admin_consent
 				# Get access_token using JWT
-				url = URI(DOCUSIGN_URL)
+				# url = URI(DOCUSIGN_URL)
+				# http = Net::HTTP.new(url.host, url.port)
+				# http.use_ssl = true
+				# http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+				# req = Net::HTTP::Post.new(url)
+				# basic_jwt_token = create_jwt_token(self.data)
+				# Rails.logger.info "GETTING DOCUSIGN ACCESSS TOKEN"
+				# Rails.logger.info "Token: --- #{basic_jwt_token}"
+				# req.set_form_data("grant_type" => "urn:ietf:params:oauth:grant-type:jwt-bearer", "assertion"=> basic_jwt_token)
+				# res = http.request(req)
+				# Rails.logger.info "Response: #{res.inspect}"
+				# case res
+				# when Net::HTTPSuccess, Net::HTTPRedirection
+				# 	response = JSON.parse(res.body)
+				# 	@user_info = UserInformation.create(access_token: response["access_token"], token_type: response["token_type"], expires_at: Time.now+(response["expires_in"].to_i).seconds, account_id: input_data["account_id"])
+				# else
+				# 	Rails.logger.info res.body.inspect
+				# 	res.value
+				# end
+				
+				# GET ACCESS TOKEN USING API AUTH
+				url = URI(DOCUSIGN_API_AUTH_URL)
 				http = Net::HTTP.new(url.host, url.port)
 				http.use_ssl = true
 				http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-				req = Net::HTTP::Post.new(url)
-				basic_jwt_token = create_jwt_token(self.data)
+				req = Net::HTTP::Post.new(url, 'Content-Type' => 'application/json')
+				req.body = {client_id: DOCUSIGN_API_CLIENT_ID, client_secret: DOCUSIGN_API_CLIENT_SECRET}.to_json
 				Rails.logger.info "GETTING DOCUSIGN ACCESSS TOKEN"
-				Rails.logger.info "Token: --- #{basic_jwt_token}"
-				req.set_form_data("grant_type" => "urn:ietf:params:oauth:grant-type:jwt-bearer", "assertion"=> basic_jwt_token)
 				res = http.request(req)
 				Rails.logger.info "Response: #{res.inspect}"
 				case res
 				when Net::HTTPSuccess, Net::HTTPRedirection
 					response = JSON.parse(res.body)
-					@user_info = UserInformation.create(access_token: response["access_token"], token_type: response["token_type"], expires_at: Time.now+(response["expires_in"].to_i).seconds, account_id: input_data["account_id"])
+					@user_info = UserInformation.create(access_token: response["access_token"], token_type: response["token_type"], expires_at: Time.now+(response["expires_in"].to_i).seconds)
 				else
 					Rails.logger.info res.body.inspect
 					res.value
 				end
-				#Get account id and base url
-				Rails.logger.info "GETTING DOCUSIGN ACCOUNT DETAILS"
-				url = URI(DOCUSING_USER_INFO_URL)
-				http = Net::HTTP.new(url.host, url.port)
-				http.use_ssl = true
-				http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-				request = Net::HTTP::Get.new(url)
-				request["Authorization"] = "Bearer #{@user_info.access_token}"
-				response = http.request(request)
-				case response
-				when Net::HTTPSuccess, Net::HTTPRedirection
-					info_response = JSON.parse(response.body)
-					puts info_response.inspect
-					@user_info.update(account_id: info_response["accounts"].first["account_id"], account_base_uri: info_response["accounts"].first["base_uri"], sub: info_response["sub"], name: info_response["name"], user_email: info_response["email"])
-				else
-					res.value
-				end
+
+				# Get account id and base url
+				# Rails.logger.info "GETTING DOCUSIGN ACCOUNT DETAILS"
+				# url = URI(DOCUSING_USER_INFO_URL)
+				# http = Net::HTTP.new(url.host, url.port)
+				# http.use_ssl = true
+				# http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+				# request = Net::HTTP::Get.new(url)
+				# request["Authorization"] = "Bearer #{@user_info.access_token}"
+				# response = http.request(request)
+				# case response
+				# when Net::HTTPSuccess, Net::HTTPRedirection
+				# 	info_response = JSON.parse(response.body)
+				# 	puts info_response.inspect
+				# 	@user_info.update(account_id: info_response["accounts"].first["account_id"], account_base_uri: info_response["accounts"].first["base_uri"], sub: info_response["sub"], name: info_response["name"], user_email: info_response["email"])
+				# else
+				# 	res.value
+				# end
 			end
 			download_success, file = download_file(@user_info, self.data)
 			puts "DDDDDDDDDDDDDDDD #{download_success}"
@@ -60,7 +80,7 @@ class FileReceive < ApplicationRecord
 		--data 'redirect_uri=#{DOCUSIGN_CALLBACK_URL}'\
 		--url '#{DOCUSIGN_URL}' \
 		--data-urlencode 'response_type=code' \
-		--data-urlencode 'scope=signature,impersonation' \
+		--data-urlencode 'scope=signature,impersonation,spring_read,spring_write' \
 		--data-urlencode 'client_id=#{DOCUSIGN_CLIENT_ID}'`
 	end
 
@@ -75,10 +95,33 @@ class FileReceive < ApplicationRecord
 
 	def download_file(user_info, file_data)
 		begin
+			# Rails.logger.info "DOWNLOAD FILE FROM DOCUSIGN"
+			# download_success = false
+			# file_data = JSON.parse(file_data)
+			# uat_url = DOCUSIGN_UAT_URL+"#{DOCUSIGN_API_USER_ID}/documents/#{file_data["document_id"]}"
+			# puts uat_url.inspect
+			# url = URI(uat_url)
+			# http = Net::HTTP.new(url.host, url.port)
+			# http.use_ssl = true
+			# http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+			# uat_request = Net::HTTP::Get.new(url)
+			# uat_request["Authorization"] = "Bearer #{user_info.access_token}"
+			# uat_response = http.request(uat_request)
+			# puts uat_response.body.inspect
+			# case uat_response
+			# when Net::HTTPSuccess, Net::HTTPRedirection
+			# 	file = File.open(file_data["document_name"], 'w'){|f|
+			# 		uat_response.read_body
+			# 	}
+			# 	download_success = true
+			# 	puts uat_response.inspect
+			# else
+			# 	uat_response.value
+			# end
 			Rails.logger.info "DOWNLOAD FILE FROM DOCUSIGN"
 			download_success = false
 			file_data = JSON.parse(file_data)
-			uat_url = DOCUSIGN_UAT_URL+"#{DOCUSIGN_API_USER_ID}/documents/#{file_data["document_id"]}"
+			uat_url = DOCUSIGN_UAT_URL+"/v201411/documents/#{file_data["document_id"]}"
 			puts uat_url.inspect
 			url = URI(uat_url)
 			http = Net::HTTP.new(url.host, url.port)
