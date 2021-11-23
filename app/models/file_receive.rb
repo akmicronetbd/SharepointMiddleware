@@ -2,6 +2,7 @@ require 'uri'
 require 'net/http'
 require 'openssl'
 class FileReceive < ApplicationRecord
+	after_create :act
 	def act
 		begin
 			input_data = JSON.parse(self.data)
@@ -69,6 +70,7 @@ class FileReceive < ApplicationRecord
 			end
 			download_success, file = download_file(@user_info, self.data)
 			puts "DDDDDDDDDDDDDDDD #{download_success}"
+			create_folder = create_sharepoint_folder(@user_info, self.data) if download_success == true
 			upload_file = upload_file(@user_info, self.data, file) if download_success == true#
 		rescue Exception => e
 			Rails.logger.info "Error! Couldn't process with Exception #{e.inspect}"
@@ -202,6 +204,38 @@ class FileReceive < ApplicationRecord
 			end
 		rescue Exception => e
 			Rails.logger.info "FAILED: SHAREPOINT ACCESS: #{e.inspect}"
+		end
+	end
+
+	def create_sharepoint_folder(user_info, data)
+		begin
+			Rails.logger.info ">>> SHAREPOINT CREATE FOLDER"
+			Rails.logger.info user_info.inspect
+			Rails.logger.info data.inspect
+			upload_data = JSON.parse(data)
+			sharepoint_access = get_sharepoint_access_token
+			sharepoint_access = JSON.parse(sharepoint_access)
+			if !sharepoint_access["access_token"].nil?
+				url = URI.encode(SHAREPOINT_FOLDER_CREATE_URL)
+				url = URI(url)
+				http = Net::HTTP.new(url.host, url.port)
+				http.use_ssl = true
+				http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+				create_req = Net::HTTP::Post.new(url, 'Content-Type' => 'application/json')
+				create_req.body = {ServerRelativeUrl: "Contract%20Library/#{upload_data["document_name"].split(".").first.to_s}"}.to_json
+				create_req["Authorization"] = "Bearer #{sharepoint_access["access_token"]}"
+				create_response = http.request(create_req)
+				case up_response
+				when Net::HTTPSuccess, Net::HTTPRedirection
+					puts up_response.inspect
+					Rails.logger.info "Folder Created successfully"
+				else
+					Rails.logger.info "Error: During Folder Creation"
+					up_response.value
+				end
+			end
+		rescue Exception => e
+			Rails.logger.info "Error! Unable to upload document #{e.inspect}"
 		end
 	end
 
