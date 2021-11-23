@@ -214,7 +214,7 @@ class FileReceive < ApplicationRecord
 			Rails.logger.info file.inspect
 			upload_data = JSON.parse(data)
 			if !sharepoint_access["access_token"].nil?
-				url = URI.encode(SHAREPOINT_UPLOAD_URL+"#{upload_data["document_name"].split(".").first.to_s})/Files/Add"+"(url='#{upload_data['document_name']}',overwrite=true)")
+				url = URI.encode(SHAREPOINT_UPLOAD_URL+"#{upload_data["document_name"].split(".").first.to_s}')/Files/Add"+"(url='#{upload_data['document_name']}',overwrite=true)")
 				Rails.logger.info url.inspect
 				url = URI(url)
 				http = Net::HTTP.new(url.host, url.port)
