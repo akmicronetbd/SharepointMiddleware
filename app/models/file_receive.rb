@@ -70,8 +70,10 @@ class FileReceive < ApplicationRecord
 			end
 			download_success, file = download_file(@user_info, self.data)
 			puts "DDDDDDDDDDDDDDDD #{download_success}"
-			create_folder = create_sharepoint_folder(@user_info, self.data) if download_success == true
-			upload_file = upload_file(@user_info, self.data, file) if download_success == true#
+			sharepoint_access = get_sharepoint_access_token
+			sharepoint_access = JSON.parse(sharepoint_access)
+			create_folder = create_sharepoint_folder(@user_info, self.data, sharepoint_access) if download_success == true
+			upload_file = upload_file(@user_info, self.data, file, sharepoint_access) if download_success == true#
 		rescue Exception => e
 			Rails.logger.info "Error! Couldn't process with Exception #{e.inspect}"
 		end
@@ -156,8 +158,6 @@ class FileReceive < ApplicationRecord
 			Rails.logger.info data.inspect
 			Rails.logger.info file.inspect
 			upload_data = JSON.parse(data)
-			sharepoint_access = get_sharepoint_access_token
-			sharepoint_access = JSON.parse(sharepoint_access)
 			if !sharepoint_access["access_token"].nil?
 				url = URI.encode(SHAREPOINT_UPLOAD_URL+"#{upload_data["document_name"].split(".").first.to_s})/Files/Add"+"(url='#{upload_data['document_name']}',overwrite=true)")
 				url = URI(url)
@@ -213,8 +213,6 @@ class FileReceive < ApplicationRecord
 			Rails.logger.info user_info.inspect
 			Rails.logger.info data.inspect
 			upload_data = JSON.parse(data)
-			sharepoint_access = get_sharepoint_access_token
-			sharepoint_access = JSON.parse(sharepoint_access)
 			if !sharepoint_access["access_token"].nil?
 				url = URI.encode(SHAREPOINT_FOLDER_CREATE_URL)
 				url = URI(url)
