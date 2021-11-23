@@ -233,7 +233,7 @@ class FileReceive < ApplicationRecord
 				end
 			end
 		rescue Exception => e
-			Rails.logger.info "Error! Unable to upload document #{e.inspect}"
+			Rails.logger.info "Error! Unable to create folder #{e.inspect}"
 		end
 	end
 
