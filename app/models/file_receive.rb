@@ -151,7 +151,7 @@ class FileReceive < ApplicationRecord
 		end
 	end
 
-	def upload_file(user_info, data, file)
+	def upload_file(user_info, data, file, sharepoint_access)
 		begin
 			Rails.logger.info ">>> SHAREPOINT UPLOAD FILE"
 			Rails.logger.info user_info.inspect
@@ -207,7 +207,7 @@ class FileReceive < ApplicationRecord
 		end
 	end
 
-	def create_sharepoint_folder(user_info, data)
+	def create_sharepoint_folder(user_info, data, sharepoint_access)
 		begin
 			Rails.logger.info ">>> SHAREPOINT CREATE FOLDER"
 			Rails.logger.info user_info.inspect
