@@ -69,11 +69,12 @@ class FileReceive < ApplicationRecord
 				# end
 			end
 			download_success, file = download_file(@user_info, self.data)
-			puts "DDDDDDDDDDDDDDDD #{download_success}"
+			Rails.logger.info "DDDDDDDDDDDDDDDD #{download_success}"
 			sharepoint_access = get_sharepoint_access_token
 			sharepoint_access = JSON.parse(sharepoint_access)
+			Rails.logger.info "Sharepoint Access >>>>>>>>>>>>> #{sharepoint_access}"
 			create_folder = create_sharepoint_folder(@user_info, self.data, sharepoint_access) if download_success == true
-			upload_file = upload_file(@user_info, self.data, file, sharepoint_access) if download_success == true#
+			upload_file = upload_file(@user_info, self.data, file, sharepoint_access) if download_success == true
 		rescue Exception => e
 			Rails.logger.info "Error! Couldn't process with Exception #{e.inspect}"
 		end
@@ -151,38 +152,6 @@ class FileReceive < ApplicationRecord
 		end
 	end
 
-	def upload_file(user_info, data, file, sharepoint_access)
-		begin
-			Rails.logger.info ">>> SHAREPOINT UPLOAD FILE"
-			Rails.logger.info user_info.inspect
-			Rails.logger.info data.inspect
-			Rails.logger.info file.inspect
-			upload_data = JSON.parse(data)
-			if !sharepoint_access["access_token"].nil?
-				url = URI.encode(SHAREPOINT_UPLOAD_URL+"#{upload_data["document_name"].split(".").first.to_s})/Files/Add"+"(url='#{upload_data['document_name']}',overwrite=true)")
-				url = URI(url)
-				http = Net::HTTP.new(url.host, url.port)
-				http.use_ssl = true
-				http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-				up_request = Net::HTTP::Post.new(url)
-				up_request["Authorization"] = "Bearer #{sharepoint_access["access_token"]}"
-				form_data = [['file', file]]
-				up_request.set_form form_data, 'multipart/form-data'
-				up_response = http.request(up_request)
-				case up_response
-				when Net::HTTPSuccess, Net::HTTPRedirection
-					puts up_response.inspect
-					Rails.logger.info "Document upload successful"
-					self.update(completed: true)
-				else
-					up_response.value
-				end
-			end
-		rescue Exception => e
-			Rails.logger.info "Error! Unable to upload document #{e.inspect}"
-		end
-	end
-
 	def get_sharepoint_access_token
 		begin
 			Rails.logger.info "GETTING ACCESS TOKEN FROM SHAREPOINT"
@@ -234,6 +203,39 @@ class FileReceive < ApplicationRecord
 			end
 		rescue Exception => e
 			Rails.logger.info "Error! Unable to create folder #{e.inspect}"
+		end
+	end
+
+	def upload_file(user_info, data, file, sharepoint_access)
+		begin
+			Rails.logger.info ">>> SHAREPOINT UPLOAD FILE"
+			Rails.logger.info user_info.inspect
+			Rails.logger.info data.inspect
+			Rails.logger.info file.inspect
+			upload_data = JSON.parse(data)
+			if !sharepoint_access["access_token"].nil?
+				url = URI.encode(SHAREPOINT_UPLOAD_URL+"#{upload_data["document_name"].split(".").first.to_s})/Files/Add"+"(url='#{upload_data['document_name']}',overwrite=true)")
+				Rails.logger.info url.inspect
+				url = URI(url)
+				http = Net::HTTP.new(url.host, url.port)
+				http.use_ssl = true
+				http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+				up_request = Net::HTTP::Post.new(url)
+				up_request["Authorization"] = "Bearer #{sharepoint_access["access_token"]}"
+				form_data = [['file', file]]
+				up_request.set_form form_data, 'multipart/form-data'
+				up_response = http.request(up_request)
+				case up_response
+				when Net::HTTPSuccess, Net::HTTPRedirection
+					puts up_response.inspect
+					Rails.logger.info "Document upload successful"
+					self.update(completed: true)
+				else
+					up_response.value
+				end
+			end
+		rescue Exception => e
+			Rails.logger.info "Error! Unable to upload document #{e.inspect}"
 		end
 	end
 
